@@ -10,6 +10,7 @@ const addressSchema = new Schema({
         min: 11,
         max: 14,
         required: true,
+        unique: true
     },
 });
 
@@ -18,8 +19,6 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    address: addressSchema,
-
     bloodGroup: {
         type: String,
         enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
@@ -27,11 +26,12 @@ const userSchema = new Schema({
     },
 
     lastDonationDate: {
-        type: Date,
+        type: String,
     },
 
     totalNumberOfDonation: {
         type: Number,
+        default: 0
     },
 
     profilePhoto: {
