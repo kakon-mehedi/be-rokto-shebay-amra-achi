@@ -7,8 +7,8 @@ const addressSchema = new Schema({
     },
     mobileNumber: {
         type: String,
-        min: 11,
-        max: 14,
+        minLength: 11,
+        maxLength: 14,
         required: true,
         unique: true
     },
@@ -19,6 +19,12 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+
+    address: {
+        type: addressSchema,
+        required: true
+    },
+
     bloodGroup: {
         type: String,
         enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],

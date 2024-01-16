@@ -11,19 +11,22 @@ const registerUser = asyncHandler(async (req, res) => {
         bloodGroup,
     } = req.body;
 
-    const profilePhotoLocalPath = req.file.path;
-
-    [name, bloodGroup].forEach((item) => {
+    [name, address, bloodGroup].forEach((item) => {
         if (!item) throw new ApiError(401, "Please provide required data");
     });
 
-    let profilePhoto = '';
+    const existedMobileNumber = await User.findOne({'address.mobileNumber': address.mobileNumber})
+    if (existedMobileNumber) throw new ApiError(400, 'Mobile Number already exist');
 
+    let profilePhoto = '';
+    const profilePhotoLocalPath = req.file?.path;
+    
     if (profilePhotoLocalPath) {
         profilePhoto = await uploadOnCloudinary(profilePhotoLocalPath);
     }
 
-    const createdUser = await User.create({...req.body, profilePhoto: profilePhoto.url || ''} );
+    const createUserPayload = {...req.body, profilePhoto: profilePhoto.url || ''};
+    const createdUser = await User.create(createUserPayload);
 
     res.status(201).json(
         new ApiResponse(201, createdUser , "User registerd successfully")
