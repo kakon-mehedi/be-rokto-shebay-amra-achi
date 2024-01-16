@@ -58,7 +58,7 @@ const updateUser = asyncHandler(async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
 
     res.status(201).json(
-        new ApiResponse(201, updateUser, 'User updated successfully')
+        new ApiResponse(201, updatedUser, 'User updated successfully')
     )
 
 })
