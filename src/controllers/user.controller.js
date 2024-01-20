@@ -114,7 +114,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const getUsers = asyncHandler(async (req, res) => {
-    const users = await User.find();
+    const users = await User.find().limit(10);
     if (!users)
         throw new ApiError(500, "Something went wrong while fetching users");
 
