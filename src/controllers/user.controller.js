@@ -65,7 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
         profilePhoto: profilePhoto.url || "",
     };
 
-    const createdUser = await User.create(createUserPayload);
+    const createdUser = await User.create(createUserPayload).select("-password -refreshToken");
 
     res.status(201).json(
         new ApiResponse(201, createdUser, "User registerd successfully")
