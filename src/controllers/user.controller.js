@@ -11,6 +11,9 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
 
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSave: false });
+
         return { accessToken, refreshToken };
     } catch (error) {
         throw new ApiError(
@@ -37,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     if (email) {
-        const isEmailExist = User.findOne(email);
+        const isEmailExist = await User.findOne({email});
 
         if (isEmailExist) {
             throw new ApiError(400, "Email already exist");
@@ -80,19 +83,22 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ email: email });
 
-    const isPasswordValid = user.isPasswordValid(password);
+    if (!user) {
+        throw new ApiError(401, 'User not found with this email');
+    }
 
-    if (!isPasswordValid) {
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+
+    if (!isPasswordCorrect) {
         throw new ApiError(400, "Password is not correct");
     }
 
-    const { accessToken, refreshToken } = generateAccessTokenAndRefreshToken(
+    const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(
         user._id
     );
 
     const loggedInUser = await User.findById(user._id).select(
-        "-password",
-        "-refreshToken"
+        "-password -refreshToken",
     );
 
     const cookieOptions = {
