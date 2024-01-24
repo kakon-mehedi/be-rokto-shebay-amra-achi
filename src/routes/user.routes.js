@@ -4,6 +4,7 @@ import {
     getUsers,
     loginUser,
     registerUser,
+    updateDonationDate,
     updateUser,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -20,5 +21,6 @@ router.route("/login").post(loginUser);
 router.route("/").get(verifyJWT, verifyAdmin, getUsers);
 router.route("/:id").get(verifyJWT, verifyAdmin, getUserDetails);
 router.route("/:id").put(verifyJWT, verifyAdmin, updateUser);
+router.route("/:id/update-donation-date").put(updateDonationDate);
 
 export default router;

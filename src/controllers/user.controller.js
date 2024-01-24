@@ -40,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     if (email) {
-        const isEmailExist = await User.findOne({email});
+        const isEmailExist = await User.findOne({ email });
 
         if (isEmailExist) {
             throw new ApiError(400, "Email already exist");
@@ -65,7 +65,9 @@ const registerUser = asyncHandler(async (req, res) => {
         profilePhoto: profilePhoto.url || "",
     };
 
-    const createdUser = await User.create(createUserPayload).select("-password -refreshToken");
+    const createdUser = await User.create(createUserPayload).select(
+        "-password -refreshToken"
+    );
 
     res.status(201).json(
         new ApiResponse(201, createdUser, "User registerd successfully")
@@ -84,7 +86,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-        throw new ApiError(401, 'User not found with this email');
+        throw new ApiError(401, "User not found with this email");
     }
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
@@ -93,12 +95,11 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Password is not correct");
     }
 
-    const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(
-        user._id
-    );
+    const { accessToken, refreshToken } =
+        await generateAccessTokenAndRefreshToken(user._id);
 
     const loggedInUser = await User.findById(user._id).select(
-        "-password -refreshToken",
+        "-password -refreshToken"
     );
 
     const cookieOptions = {
@@ -141,4 +142,28 @@ const updateUser = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, getUsers, getUserDetails, updateUser, loginUser };
+const updateDonationDate = asyncHandler(async (req, res) => {
+    const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        {
+            lastDonationDate: req.body.lastDonationDate,
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+
+    if (!updatedUser) {
+        throw new ApiError(
+            500,
+            "Something went wrong while updating donation date"
+        );
+    }
+
+    res
+    .status(201)
+    .json(new ApiResponse(201, 'User is updated successfully'));
+});
+
+export { registerUser, getUsers, getUserDetails, updateUser, loginUser, updateDonationDate };
