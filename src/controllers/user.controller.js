@@ -40,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     if (email) {
-        const isEmailExist = await User.findOne({email});
+        const isEmailExist = await User.findOne({ email });
 
         if (isEmailExist) {
             throw new ApiError(400, "Email already exist");
@@ -64,11 +64,13 @@ const registerUser = asyncHandler(async (req, res) => {
         ...req.body,
         profilePhoto: profilePhoto.url || "",
     };
+   
+    const createdUser = await User.create(createUserPayload);
 
-    const createdUser = await User.create(createUserPayload).select("-password -refreshToken");
+    const userWithoutSensitiveFields = await User.find(createdUser._id).select("-password -refreshToken -__v");
 
     res.status(201).json(
-        new ApiResponse(201, createdUser, "User registerd successfully")
+        new ApiResponse(201, userWithoutSensitiveFields, "User registerd successfully")
     );
 });
 
@@ -84,21 +86,20 @@ const loginUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-        throw new ApiError(401, 'User not found with this email');
+        throw new ApiError(401, "Authentication failed");
     }
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
 
     if (!isPasswordCorrect) {
-        throw new ApiError(400, "Password is not correct");
+        throw new ApiError(400, "Authentication Failed");
     }
 
-    const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(
-        user._id
-    );
+    const { accessToken, refreshToken } =
+        await generateAccessTokenAndRefreshToken(user._id);
 
     const loggedInUser = await User.findById(user._id).select(
-        "-password -refreshToken",
+        "-password -refreshToken"
     );
 
     const cookieOptions = {
@@ -108,13 +109,12 @@ const loginUser = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .cookie("accessToken", accessToken, cookieOptions)
-        .cookie("refreshToken", refreshToken, cookieOptions)
-        .json(new ApiResponse(200, loggedInUser, "User loggedin successfully"));
+        .cookie("roktoShebaAccessToken", accessToken, cookieOptions)
+        .json(new ApiResponse(200, accessToken, "User loggedin successfully"));
 });
 
 const getUsers = asyncHandler(async (req, res) => {
-    const users = await User.find();
+    const users = await User.find().limit(10);
     if (!users)
         throw new ApiError(500, "Something went wrong while fetching users");
 
@@ -141,4 +141,11 @@ const updateUser = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, getUsers, getUserDetails, updateUser, loginUser };
+
+export {
+    registerUser,
+    getUsers,
+    getUserDetails,
+    updateUser,
+    loginUser
+};
