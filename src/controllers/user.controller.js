@@ -86,13 +86,13 @@ const loginUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-        throw new ApiError(401, "User not found with this email");
+        throw new ApiError(401, "Authentication failed");
     }
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
 
     if (!isPasswordCorrect) {
-        throw new ApiError(400, "Password is not correct");
+        throw new ApiError(400, "Authentication Failed");
     }
 
     const { accessToken, refreshToken } =
