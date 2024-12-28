@@ -31,26 +31,6 @@ const userSchema = new Schema({
         type: String,
     },
 
-    address: {
-        type: addressSchema,
-        required: true,
-    },
-
-    bloodGroup: {
-        type: String,
-        enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
-        required: [true, 'Blood group is required']
-    },
-
-    lastDonationDate: {
-        type: String,
-    },
-
-    totalNumberOfDonation: {
-        type: Number,
-        default: 0,
-    },
-
     profilePhoto: {
         type: String,
     },

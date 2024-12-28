@@ -109,9 +109,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .cookie("accessToken", accessToken, cookieOptions)
-        .cookie("refreshToken", refreshToken, cookieOptions)
-        .json(new ApiResponse(200, loggedInUser, "User loggedin successfully"));
+        .cookie("roktoShebaAccessToken", accessToken, cookieOptions)
+        .json(new ApiResponse(200, accessToken, "User loggedin successfully"));
 });
 
 const getUsers = asyncHandler(async (req, res) => {
@@ -142,33 +141,11 @@ const updateUser = asyncHandler(async (req, res) => {
     );
 });
 
-const updateDonationDate = asyncHandler(async (req, res) => {
-    const updatedUser = await User.findByIdAndUpdate(
-        req.params.id,
-        {
-            lastDonationDate: req.body.lastDonationDate,
-        },
-        {
-            new: true,
-            runValidators: true,
-        }
-    );
-
-    if (!updatedUser) {
-        throw new ApiError(
-            500,
-            "Something went wrong while updating donation date"
-        );
-    }
-
-    res.status(201).json(new ApiResponse(201, "User is updated successfully"));
-});
 
 export {
     registerUser,
     getUsers,
     getUserDetails,
     updateUser,
-    loginUser,
-    updateDonationDate,
+    loginUser
 };
