@@ -64,13 +64,13 @@ const registerUser = asyncHandler(async (req, res) => {
         ...req.body,
         profilePhoto: profilePhoto.url || "",
     };
+   
+    const createdUser = await User.create(createUserPayload);
 
-    const createdUser = await User.create(createUserPayload).select(
-        "-password -refreshToken"
-    );
+    const userWithoutSensitiveFields = await User.find(createdUser._id).select("-password -refreshToken -__v");
 
     res.status(201).json(
-        new ApiResponse(201, createdUser, "User registerd successfully")
+        new ApiResponse(201, userWithoutSensitiveFields, "User registerd successfully")
     );
 });
 
@@ -161,9 +161,14 @@ const updateDonationDate = asyncHandler(async (req, res) => {
         );
     }
 
-    res
-    .status(201)
-    .json(new ApiResponse(201, 'User is updated successfully'));
+    res.status(201).json(new ApiResponse(201, "User is updated successfully"));
 });
 
-export { registerUser, getUsers, getUserDetails, updateUser, loginUser, updateDonationDate };
+export {
+    registerUser,
+    getUsers,
+    getUserDetails,
+    updateUser,
+    loginUser,
+    updateDonationDate,
+};

@@ -19,7 +19,7 @@ const addressSchema = new Schema({
 const userSchema = new Schema({
     name: {
         type: String,
-        required: true,
+        required: [true, "Name is required"]
     },
 
     email: {
@@ -39,7 +39,7 @@ const userSchema = new Schema({
     bloodGroup: {
         type: String,
         enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
-        required: true,
+        required: [true, 'Blood group is required']
     },
 
     lastDonationDate: {
