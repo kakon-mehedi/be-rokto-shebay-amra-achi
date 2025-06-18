@@ -23,6 +23,13 @@ import donorRouter from './routes/donor.route.js'
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/donors", donorRouter);
 
+app.get("/", (req, res) => {
+    res.json({
+        message: "Welcome to Rokto Shebay API",
+        status: "Server is running successfully"
+    });
+});
+
 // http://localhost:8000/api/v1/users/register
 
 export { app }

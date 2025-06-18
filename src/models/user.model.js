@@ -19,7 +19,7 @@ const addressSchema = new Schema({
 const userSchema = new Schema({
     name: {
         type: String,
-        required: [true, "Name is required"]
+        required: [true, "Name is required"],
     },
 
     email: {
@@ -34,12 +34,20 @@ const userSchema = new Schema({
     profilePhoto: {
         type: String,
     },
-    
+
+    address: addressSchema,
+
+    bloodGroup: {
+        type: String,
+        enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+        required: [true, "Blood group is required"],
+    },
+
     role: {
         type: String,
-        enum: ['user', 'admin'],
-        default: 'user',
-      },
+        enum: ["user", "admin"],
+        default: "user",
+    },
 });
 
 userSchema.pre("save", async function (next) {
